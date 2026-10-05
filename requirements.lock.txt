@@ -1,0 +1,31 @@
+# Fully pinned dependency set, including the dev/CI toolchain.
+#
+# Generated from the environment that produced every number in README.md and
+# benchmark.json.  CI installs from this file so a lint rule change or a
+# solver default change cannot flip an acceptance gate between runs.
+#
+# NOTE: this file lists `name==version` only -- no `file://` paths.  A lock
+# containing machine-local absolute paths is not a lock: it cannot be installed
+# anywhere else.
+#
+# Install runtime only:  python -m pip install -r requirements.lock.txt
+# Install with dev:      python -m pip install -r requirements.lock.txt
+#                        (the dev extras are listed below and are safe to omit
+#                         if you only want to run the library)
+
+# --- runtime ---
+numpy==2.5.3
+scipy==1.16.3
+scikit-learn==1.9.1
+joblib==1.6.0
+threadpoolctl==3.7.0
+
+# --- test / lint toolchain ---
+pytest==9.1.1
+pytest-cov==7.1.0
+coverage==7.16.2
+ruff==0.16.10
+iniconfig==2.3.0
+packaging==26.3
+pluggy==1.6.0
+Pygments==2.21.0

@@ -1,0 +1,17 @@
+# Runtime dependencies -- pinned.
+#
+# WHY PINNED: these versions are part of correctness, not just convenience.
+#   * numpy 2.x removed `np.float_`, `np.trapz`, `np.NaN`, `np.Inf`.
+#   * The vectorised DP in miners/vector_index.py relies on `argmax` semantics
+#     over boolean rows, which are stable across these versions.
+#   * scikit-learn's `LogisticRegression` gained the default solver behaviour
+#     used by the downstream utility measurement in 1.5; 1.4 behaves differently.
+#   * ruff is pinned because its rule set changes between releases -- an
+#     unpinned CI lint step silently starts failing (or silently stops failing).
+#
+# Install:  python -m pip install -r requirements.txt
+numpy==2.5.3
+scipy==1.16.3
+scikit-learn==1.9.1
+joblib==1.6.0
+threadpoolctl==3.7.0

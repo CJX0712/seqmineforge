@@ -1,0 +1,58 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Test & coverage artifacts
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.ruff_cache/
+.mypy_cache/
+
+# Generated benchmark output -- reproducible via `python examples/run_demo.py`,
+# so it must never be committed: a stale JSON is indistinguishable from a real
+# measurement at a glance.
+benchmark.json
+benchmark-*.json
+*_report.json
+
+# Model / data artifacts
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.joblib
+data_cache/
+.cache/
+
+# Secrets -- never commit these
+.env
+.env.*
+*.pem
+*.key
+secrets/
+credentials.json
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
