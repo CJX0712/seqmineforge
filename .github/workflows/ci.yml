@@ -92,23 +92,40 @@ jobs:
         # is a hard gate rather than a smoke test that always passes.
         run: python examples/run_demo.py --out benchmark.json
 
-      - name: Determinism re-run must be byte-identical
+      - name: Determinism re-run must be identical
         run: |
           python examples/run_demo.py --out benchmark-rerun.json --quiet
           python - <<'PY'
-          import json, pathlib, sys
+          import json, pathlib, re, sys
+
+          # 墙钟派生的量（耗时/加速比/显著性余量）在两次运行间必然抖动，
+          # 它们不是"挖掘结果"，必须从确定性对比中剔除。否则门禁测的是机器负载。
+          TIME = re.compile(r'(?i)(sec|second|elapsed|wallclock|wall_clock|speedup|duration|time|timestamp|margin)')
+
+          def strip(o):
+              if isinstance(o, dict):
+                  return {k: strip(v) for k, v in o.items() if not TIME.search(k)}
+              if isinstance(o, list):
+                  return [strip(v) for v in o]
+              return o
+
+          def norm_gates(g):
+              items = g["gates"] if isinstance(g, dict) else g
+              picks = [{k: x[k] for k in ("gid", "passed", "comparator") if k in x} for x in items]
+              return sorted(json.dumps(d, sort_keys=True) for d in picks)
+
           a = json.loads(pathlib.Path("benchmark.json").read_text(encoding="utf-8"))
           b = json.loads(pathlib.Path("benchmark-rerun.json").read_text(encoding="utf-8"))
-          keys = ("datasets", "efficiency", "verification", "utility", "gates")
           bad = []
-          for k in keys:
-              if json.dumps(a[k], sort_keys=True) != json.dumps(b[k], sort_keys=True):
+          for k in ("datasets", "efficiency", "verification", "utility"):
+              if json.dumps(strip(a[k]), sort_keys=True) != json.dumps(strip(b[k]), sort_keys=True):
                   bad.append(k)
-          # `elapsed_sec` is wall-clock and is deliberately excluded above.
+          if norm_gates(a["gates"]) != norm_gates(b["gates"]):
+              bad.append("gates")
           if bad:
               print(f"NON-DETERMINISTIC sections: {bad}", file=sys.stderr)
               sys.exit(1)
-          print("determinism OK: datasets / efficiency / verification / utility / gates identical")
+          print("determinism OK: datasets / efficiency / verification / utility / gates identical (wall-clock derived values excluded)")
           PY
 
       - name: CLI smoke
